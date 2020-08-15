@@ -1,0 +1,27 @@
+version: "3.5"
+
+services:
+  vic-web:
+    restart: on-failure
+    container_name: vic-web
+    tty: true
+    stdin_open: true
+    build:
+      context: app
+    volumes:
+      - ./app/src:/usr/app/src
+      - ./app/public:/usr/app/public
+      - node-cache:/usr/app/node_modules
+    ports:
+      - 3000:3000
+    env_file: ./.env
+    networks:
+      - vic
+
+networks:
+  vic:
+    name: vic-net
+    driver: bridge
+
+volumes:
+  node-cache:
