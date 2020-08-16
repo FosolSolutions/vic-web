@@ -1,11 +1,26 @@
 version: "3.5"
 
 services:
+  vic-api:
+    restart: on-failure
+    container_name: vic-api
+    build:
+      context: api
+    volumes:
+      - "./api/certs:/root/https"
+    ports:
+      - 1080:80
+      - 10443:443
+    env_file: ./api/.env
+    networks:
+      - vic
   vic-web:
     restart: on-failure
     container_name: vic-web
     tty: true
     stdin_open: true
+    depends_on:
+      - vic-api
     build:
       context: app
     volumes:
