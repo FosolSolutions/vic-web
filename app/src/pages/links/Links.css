@@ -1,0 +1,7 @@
+ul {
+  list-style: none outside none;
+}
+
+ul li a {
+  text-decoration: none;
+}

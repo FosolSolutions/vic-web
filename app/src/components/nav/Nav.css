@@ -1,0 +1,59 @@
+.nav {
+  margin: auto;
+  width: 80vh;
+  padding: 20px;
+  text-align: left;
+  overflow: auto;
+  position: relative;
+}
+
+.logo {
+  float: left;
+  min-width: 412px;
+  padding: 10px;
+  position: absolute;
+  bottom: 0;
+}
+
+.logo a {
+  text-decoration: none;
+}
+
+.logo a img {
+  height: auto;
+  width: 320px;
+}
+
+.menu {
+  float: right;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+.menu ul {
+  list-style: none outside none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.menu ul li {
+  float: left;
+}
+
+.menu ul li a {
+  display: block;
+  padding: 16px;
+  text-decoration: none;
+  text-align: center;
+  color: #3a3a3a;
+  font-size: 15px;
+}
+
+.menu ul li a:hover {
+  color: #2c7dbe;
+}

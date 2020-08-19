@@ -1,0 +1,9 @@
+.main .text {
+  display: inline-block;
+  max-width: 60%;
+}
+
+.main .map {
+  max-width: 50%;
+  float: right;
+}
