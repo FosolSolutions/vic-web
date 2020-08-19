@@ -11,7 +11,7 @@ services:
     ports:
       - 1080:80
       - 10443:443
-    env_file: ./api/.env
+    env_file: ./api/src/.env
     networks:
       - vic
   vic-web:
