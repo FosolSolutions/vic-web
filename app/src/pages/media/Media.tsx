@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./Media.css";
-import { IFiles } from ".";
+import { API, IFiles } from "../../services";
+import dateFormat from "dateformat";
+
+const defaultShare = "/talks";
+const defaultPath = "/talks/Exhortations";
 
 export default () => {
   const [category, setCategory] = useState({
-    path: "/talks/Exhortations",
+    path: defaultPath,
   });
   const [categories, setCategories] = useState({
     page: 1,
@@ -16,7 +20,7 @@ export default () => {
     error: null as string | null,
   });
   useEffect(() => {
-    fetch(`https://localhost:10443/filestation/files?path=/talks`, {
+    fetch(API.FileStation.Files(defaultShare), {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -32,7 +36,7 @@ export default () => {
       });
   }, []);
   useEffect(() => {
-    fetch(`https://localhost:10443/filestation/files?path=${category.path}`, {
+    fetch(API.FileStation.Files(category.path), {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -79,17 +83,16 @@ export default () => {
             return (
               <li key={share.name}>
                 <div>
-                  <span>
-                    <a
-                      href={
-                        "https://localhost:10443/filestation/files/download?path=" +
-                        share.path
-                      }
-                    >
-                      {share.name}
-                    </a>
-                  </span>
+                  <a href={API.FileStation.Download(share.path)}>
+                    {share.name}
+                  </a>
+                  {share.author ? ` - ${share.author}` : ""}
+                  {share.publishedOn
+                    ? ` - ${dateFormat(share.publishedOn, "dddd mmmm dd yyyy")}`
+                    : ""}
                 </div>
+                <div>{share.description}</div>
+                <hr />
               </li>
             );
           })}

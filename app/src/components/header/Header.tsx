@@ -1,5 +1,6 @@
 import React from "react";
 import "./Header.css";
+import { Link } from "react-router-dom";
 
 export default () => {
   return (
@@ -23,6 +24,9 @@ export default () => {
               <i className="fab fa-youtube"></i>
               <span className="assistive-text">Subscribe to me on YouTube</span>
             </a>
+          </li>
+          <li>
+            <Link to="/admin/media">a</Link>
           </li>
         </ul>
       </div>
