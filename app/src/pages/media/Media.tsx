@@ -1,17 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Media.css";
-
-interface IShares {
-  page: number;
-  total: number;
-  items: IShare[];
-}
-
-interface IShare {
-  name: string;
-  path: string;
-  isDir: boolean;
-}
+import { IFiles } from ".";
 
 export default () => {
   const [category, setCategory] = useState({
@@ -21,9 +10,9 @@ export default () => {
     page: 1,
     total: 0,
     items: [],
-  } as IShares);
+  } as IFiles);
   const [data, setData] = useState({
-    response: { page: 1, total: 0, items: [] } as IShares,
+    response: { page: 1, total: 0, items: [] } as IFiles,
     error: null as string | null,
   });
   useEffect(() => {
@@ -35,11 +24,11 @@ export default () => {
       },
     })
       .then(async (response) => {
-        const data = (await response.json()) as IShares;
+        const data = (await response.json()) as IFiles;
         setCategories(data);
       })
       .catch(() => {
-        setCategories({ page: 1, total: 0, items: [] } as IShares);
+        setCategories({ page: 1, total: 0, items: [] } as IFiles);
       });
   }, []);
   useEffect(() => {
@@ -51,7 +40,7 @@ export default () => {
       },
     })
       .then(async (response) => {
-        const data = (await response.json()) as IShares;
+        const data = (await response.json()) as IFiles;
         setData({
           response: data,
           error: null,
