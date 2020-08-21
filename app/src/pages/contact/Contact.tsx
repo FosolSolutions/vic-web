@@ -4,14 +4,14 @@ export default () => {
   return (
     <div>
       <div>
-        <p>
+        <div>
           <span className="bold">Please contact us if you:</span>
           <ul>
             <li>Wish to register for one of our online meetings or seminars</li>
             <li>Need a bible</li>
             <li>Would like free bible literature</li>
           </ul>
-        </p>
+        </div>
         <div>
           <label>Name</label>
           <span className="red">*</span>

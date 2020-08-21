@@ -8,11 +8,7 @@
 }
 
 .logo {
-  float: left;
-  min-width: 412px;
-  padding: 10px;
-  position: absolute;
-  bottom: 0;
+  text-align: left;
 }
 
 .logo a {
@@ -21,7 +17,7 @@
 
 .logo a img {
   height: auto;
-  width: 320px;
+  max-width: 320px;
 }
 
 .menu {

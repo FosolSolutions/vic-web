@@ -6,11 +6,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: black;
-}
-
-.header div {
-  width: 1024px;
-  float: right;
+  text-align: right;
 }
 
 .social-icons {
@@ -21,18 +17,14 @@
 
 .social-icons li {
   display: inline-block;
-  margin: 0;
+  margin-left: 15px;
 }
 
-.social-icons.alignright li {
-  margin-left: 8px;
-  margin-left: 0.5rem;
+.social-icons li a {
+  font-size: 20pt;
+  color: grey;
 }
 
-.fa-facebook-f:before {
-  content: "\f39e";
-}
-
-.fa-youtube:before {
-  content: "\f167";
+.social-icons li a:hover {
+  color: darkgrey;
 }

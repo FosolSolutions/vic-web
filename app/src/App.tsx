@@ -1,60 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import Header from "./components/header/Header";
 import Nav from "./components/nav/Nav";
+import Main from "./components/main/Main";
 import Footer from "./components/footer/Footer";
+import { Container } from "react-bootstrap";
 import {
-  Home,
-  Conference,
-  Contact,
-  Donate,
-  Events,
-  Links,
-  Media,
-  Seminars,
-  AdminMedia,
-} from "./pages";
+  AuthenticationContext,
+  IUser,
+} from "./components/authentication/AuthenticationContext";
+import JwtDecode from "jwt-decode";
+import { useCookies } from "react-cookie";
 
 export default () => {
+  const [cookies] = useCookies(["VicWeb"]);
+  const token = cookies["VicWeb"];
+  const data = !!token ? JwtDecode(token) : undefined;
+  const [user, setUser] = useState({
+    isAuthenticated: !!data,
+    // displayName: data?.displayName ?? undefined,
+    token: token,
+  } as IUser);
   return (
-    <Router>
-      <div className="App">
-        <Header />
-        <Nav />
-        <main className="main">
-          <Switch>
-            <Route path="/admin/media">
-              <AdminMedia />
-            </Route>
-            <Route path="/conference">
-              <Conference />
-            </Route>
-            <Route path="/contact">
-              <Contact />
-            </Route>
-            <Route path="/donate">
-              <Donate />
-            </Route>
-            <Route path="/events">
-              <Events />
-            </Route>
-            <Route path="/links">
-              <Links />
-            </Route>
-            <Route path="/media">
-              <Media />
-            </Route>
-            <Route path="/seminars">
-              <Seminars />
-            </Route>
-            <Route path="/">
-              <Home />
-            </Route>
-          </Switch>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <AuthenticationContext.Provider value={{ user, setUser }}>
+      <Router>
+        <div className="App">
+          <Header />
+          <Container className="main">
+            <Nav />
+            <Main />
+          </Container>
+          <Footer />
+        </div>
+      </Router>
+    </AuthenticationContext.Provider>
   );
 };

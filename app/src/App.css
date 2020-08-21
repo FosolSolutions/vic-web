@@ -19,6 +19,10 @@ ul {
   margin: 0 0 1rem 1.25rem;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .assistive-text {
   clip: rect(1px 1px 1px 1px);
   clip: rect(1px, 1px, 1px, 1px);

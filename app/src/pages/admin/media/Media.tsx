@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { API, IFiles, IFile } from "../../../services";
+import { Row, Col, Form, Button } from "react-bootstrap";
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "./Media.css";
 
 const defaultShare = "/talks";
 const defaultPath = "/talks/Exhortations";
@@ -62,28 +65,110 @@ export default () => {
     name: P,
     value: string
   ) => {
-    let state = {
-      ...data,
-      response: {
-        ...data.response,
-        items: [
-          ...data.response.items.slice(0, index),
-          {
-            ...data.response.items[index],
-            [name]: value,
+    setData((state) => {
+      return {
+        ...state,
+        response: {
+          ...state.response,
+          items: [
+            ...state.response.items.slice(0, index),
+            {
+              ...state.response.items[index],
+              [name]: value,
+            },
+            ...state.response.items.slice(index + 1),
+          ],
+        },
+      };
+    });
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLElement>, index: number) => {
+    event.preventDefault();
+    var item = data.response.items[index];
+
+    if (validateForm()) {
+      if (item.id) {
+        fetch(API.Admin.Items.Update(item.id as number), {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
           },
-          ...data.response.items.slice(index + 1),
-        ],
-      },
-    };
-    setData(state);
+          body: JSON.stringify(item),
+        })
+          .then(async (response) => {
+            if (response.ok) {
+              const data = (await response.json()) as IFile;
+              setData((state) => {
+                return {
+                  ...state,
+                  response: {
+                    ...state.response,
+                    items: [
+                      ...state.response.items.slice(0, index),
+                      data,
+                      ...state.response.items.slice(index + 1),
+                    ],
+                  },
+                };
+              });
+            } else {
+              console.log("Request failed");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        fetch(API.Admin.Items.Add(), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+          body: JSON.stringify(item),
+        })
+          .then(async (response) => {
+            if (response.ok) {
+              const data = (await response.json()) as IFile;
+              setData((state) => {
+                return {
+                  ...state,
+                  response: {
+                    ...state.response,
+                    items: [
+                      ...state.response.items.slice(0, index),
+                      data,
+                      ...state.response.items.slice(index + 1),
+                    ],
+                  },
+                };
+              });
+            } else {
+              console.log("Request failed");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    }
+  };
+
+  const validateForm = (): boolean => {
+    return true;
   };
   return (
-    <div>
-      <h1>Media Administration</h1>
-      <div>
-        <div className="categories">
-          <h1>Categories</h1>
+    <React.Fragment>
+      <Row>
+        <Col sm={12}>
+          <h1>Media Administration</h1>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={2}>
+          <h3>Categories</h3>
           <ul>
             {categories.items.map((category) => {
               return (
@@ -98,70 +183,78 @@ export default () => {
               );
             })}
           </ul>
-        </div>
-      </div>
-      <div className="files">
-        <h2>Recordings</h2>
-        <ul>
-          {data.response.items.map((item, i) => {
-            return (
-              <li key={item.path}>
-                <form>
-                  <div>
+        </Col>
+        <Col sm={10} className="files">
+          <ul>
+            {data.response.items.map((item, i) => {
+              return (
+                <li key={item.path}>
+                  <Form onSubmit={(e) => handleSubmit(e, i)}>
                     <div>
-                      <label>Name</label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={item.name}
+                      <Form.Group>
+                        <Form.Label>Name</Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="name"
+                          value={item.name}
+                          onChange={(e) => {
+                            setArrayField(i, "name", e.target.value);
+                          }}
+                        />
+                      </Form.Group>
+                      <Form.Group>
+                        <Form.Label>Author</Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="author"
+                          value={item.author ?? ""}
+                          onChange={(e) => {
+                            setArrayField(i, "author", e.target.value);
+                          }}
+                        />
+                      </Form.Group>
+                      <Form.Group>
+                        <Form.Label>Published On</Form.Label>
+                        <DatePicker
+                          name="publishedOn"
+                          className="form-control date-picker"
+                          selected={
+                            item.publishedOn
+                              ? new Date(item.publishedOn)
+                              : undefined
+                          }
+                          dateFormat="Pp"
+                          showTimeSelect
+                          onChange={(value: any) => {
+                            setArrayField(i, "publishedOn", value);
+                          }}
+                        />
+                      </Form.Group>
+                    </div>
+                    <Form.Group>
+                      <Form.Label>Description</Form.Label>
+                      <Form.Control
+                        as="textarea"
+                        name="description"
+                        value={item.description ?? ""}
                         onChange={(e) => {
-                          setArrayField(i, "name", e.target.value);
+                          setArrayField(i, "description", e.target.value);
                         }}
                       />
-                    </div>
-                    <div>
-                      <label>Author</label>
-                      <input
-                        type="text"
-                        name="author"
-                        value={item.author ?? ""}
-                        onChange={(e) => {
-                          setArrayField(i, "author", e.target.value);
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <label>Published On</label>
-                      <DatePicker
-                        name="publishedOn"
-                        selected={item.publishedOn ?? new Date()}
-                        dateFormat="Pp"
-                        onChange={(value: any) => {
-                          setArrayField(i, "publishedOn", value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label>Description</label>
-                    <textarea
-                      name="description"
-                      value={item.description ?? ""}
-                      onChange={(e) => {
-                        setArrayField(i, "description", e.target.value);
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <input type="submit" value="Save" />
-                  </div>
-                </form>
-                <hr />
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    </div>
+                    </Form.Group>
+                    <Form.Group>
+                      <Button type="submit" className="btn btn-primary">
+                        Save
+                      </Button>
+                    </Form.Group>
+                  </Form>
+                  <hr />
+                </li>
+              );
+            })}
+          </ul>
+        </Col>
+      </Row>
+    </React.Fragment>
   );
 };
