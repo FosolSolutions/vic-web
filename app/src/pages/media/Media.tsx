@@ -1,17 +1,20 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import "./Media.css";
-import { FileStation, FileStationRoutes, IFiles } from "../../services";
+import { getFileStation, FileStationRoutes, IFiles } from "../../services";
 import dateFormat from "dateformat";
 import { Row, Col, Button } from "react-bootstrap";
-import { AuthenticationContext } from "../../components/contexts/AuthenticationContext";
 import { useHistory } from "react-router-dom";
+import { AuthenticationContext } from "../../components/contexts/AuthenticationContext";
+import { SiteContext } from "../../components/contexts/SiteContext";
 
 const defaultShare = "/talks";
 const defaultPath = "/talks/Exhortations";
 
 export default () => {
   const history = useHistory();
-  const [identity] = useContext(AuthenticationContext);
+  const [identity] = React.useContext(AuthenticationContext);
+  const [, setSite] = React.useContext(SiteContext);
+  const FileStation = getFileStation(identity, setSite);
   const [category, setCategory] = useState({
     path: defaultPath,
   });
@@ -68,7 +71,7 @@ export default () => {
         <Col sm={2}>
           <h3>Categories</h3>
           <ul>
-            {categories.items.map((category) => {
+            {categories.items?.map((category) => {
               return (
                 <li key={category.name}>
                   <a
@@ -84,7 +87,7 @@ export default () => {
         </Col>
         <Col sm={10}>
           <ul>
-            {data.response.items.map((share) => {
+            {data.response?.items?.map((share) => {
               return (
                 <li key={share.name}>
                   <div>

@@ -6,4 +6,4 @@ export type { default as IToken } from "./IToken";
 export type { default as IAccessToken } from "./IAccessToken";
 export type { default as IUser } from "./IUser";
 export * from "./api";
-export { send, get, post, put, remove } from "./Ajax";
+export * from "./Ajax";

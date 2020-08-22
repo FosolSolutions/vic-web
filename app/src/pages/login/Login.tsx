@@ -1,17 +1,21 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
-import { Auth, IToken, ILogin } from "../../services";
+import { IToken, ILogin } from "../../services";
 import { useHistory } from "react-router-dom";
 import {
   AuthenticationContext,
   generateIdentity,
 } from "../../components/contexts/AuthenticationContext";
+import { SiteContext } from "../../components/contexts/SiteContext";
 import { useCookies } from "react-cookie";
 import Constants from "../../settings/Constants";
+import { getAuth } from "../../services";
 
 export default () => {
   const [, setCookie] = useCookies([Constants.cookieName]);
-  const [, setIdentity] = useContext(AuthenticationContext);
+  const [identity, setIdentity] = React.useContext(AuthenticationContext);
+  const [, setSite] = React.useContext(SiteContext);
+  const Auth = getAuth(identity, setSite);
   const history = useHistory();
   const [account, setAccount] = useState({
     username: undefined,

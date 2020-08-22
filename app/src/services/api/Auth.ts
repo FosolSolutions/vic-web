@@ -1,6 +1,8 @@
 import Constants from "../../settings/Constants";
-import { post } from "../Ajax";
+import getAjax, { IAjax } from "../Ajax";
 import { ILogin } from "../";
+import { IIdentity } from "../../components/contexts/AuthenticationContext";
+import { ISite } from "../../components/contexts/SiteContext";
 
 const route = `${Constants.apiUrl}/auth`;
 export const Routes = {
@@ -8,15 +10,23 @@ export const Routes = {
   refresh: () => `${route}/refresh`,
 };
 
-export const token = (login: ILogin) => {
-  return post(Routes.token(), login);
+export const token = (login: ILogin, ajax: IAjax) => {
+  return ajax.post(Routes.token(), login);
 };
 
-export const refresh = () => {
-  return post(Routes.refresh());
+export const refresh = (ajax: IAjax) => {
+  return ajax.post(Routes.refresh(), undefined);
 };
 
-export default {
-  token: token,
-  refresh: refresh,
+export const getAuth = (
+  identity: IIdentity,
+  setSite: (state: ISite) => void
+) => {
+  const ajax = getAjax(identity, setSite);
+  return {
+    token: (login: ILogin) => token(login, ajax),
+    refresh: () => refresh(ajax),
+  };
 };
+
+export default getAuth;

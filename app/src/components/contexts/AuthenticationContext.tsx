@@ -33,7 +33,9 @@ export const generateIdentity = (
       isAuthenticated: false,
     };
 
-  var identity = JwtDecode(token.accessToken) as IAccessToken;
+  var identity = !!token.accessToken
+    ? (JwtDecode(token.accessToken) as IAccessToken)
+    : ({} as IAccessToken);
   return {
     isAuthenticated: true,
     accessToken: token.accessToken,
@@ -41,12 +43,12 @@ export const generateIdentity = (
     refreshToken: token.refreshToken,
     refreshExpiresIn: token.refreshExpiresIn,
     scope: token.scope,
-    username: identity.unique_name,
-    email: identity.email,
-    displayName: identity.display_name,
+    username: identity?.unique_name,
+    email: identity?.email,
+    displayName: identity?.display_name,
     claims: [
-      { key: "given_name", value: identity.given_name },
-      { key: "family_name", value: identity.family_name },
+      { key: "given_name", value: identity?.given_name },
+      { key: "family_name", value: identity?.family_name },
     ],
   };
 };

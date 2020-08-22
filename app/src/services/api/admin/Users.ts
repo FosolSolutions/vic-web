@@ -1,6 +1,8 @@
 import Constants from "../../../settings/Constants";
-import { get as aget, post, put, remove as aremove } from "../../Ajax";
+import getAjax, { IAjax } from "../../Ajax";
 import { IUser } from "../../";
+import { IIdentity } from "../../../components/contexts/AuthenticationContext";
+import { ISite } from "../../../components/contexts/SiteContext";
 
 const route = `${Constants.apiUrl}/admin/users`;
 export const Routes = {
@@ -11,30 +13,38 @@ export const Routes = {
   remove: (id: string) => `${route}/${id}`,
 };
 
-export const list = () => {
-  return aget(Routes.list());
+export const list = (ajax: IAjax) => {
+  return ajax.get(Routes.list());
 };
 
-export const get = (id: string) => {
-  return aget(Routes.get(id));
+export const get = (id: string, ajax: IAjax) => {
+  return ajax.get(Routes.get(id));
 };
 
-export const add = (user: IUser) => {
-  return post(Routes.add(), user);
+export const add = (user: IUser, ajax: IAjax) => {
+  return ajax.post(Routes.add(), user);
 };
 
-export const update = (id: string, user: IUser) => {
-  return put(Routes.update(id), user);
+export const update = (id: string, user: IUser, ajax: IAjax) => {
+  return ajax.put(Routes.update(id), user);
 };
 
-export const remove = (id: string, user: IUser) => {
-  return aremove(Routes.remove(id), user);
+export const remove = (id: string, user: IUser, ajax: IAjax) => {
+  return ajax.remove(Routes.remove(id), user);
 };
 
-export default {
-  list: list,
-  get: get,
-  add: add,
-  update: update,
-  remove: remove,
+export const getUsers = (
+  identity: IIdentity,
+  setSite: (state: ISite) => void
+) => {
+  const ajax = getAjax(identity, setSite);
+  return {
+    list: () => list(ajax),
+    get: (id: string) => get(id, ajax),
+    add: (user: IUser) => add(user, ajax),
+    update: (id: string, user: IUser) => update(id, user, ajax),
+    remove: (id: string, user: IUser) => remove(id, user, ajax),
+  };
 };
+
+export default getUsers;

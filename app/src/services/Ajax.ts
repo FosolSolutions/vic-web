@@ -1,6 +1,30 @@
-import { useContext } from "react";
-import { AuthenticationContext } from "../components/contexts/AuthenticationContext";
-import { SiteContext } from "../components/contexts/SiteContext";
+import { ISite } from "../components/contexts/SiteContext";
+import { IIdentity } from "../components/contexts/AuthenticationContext";
+
+export interface IAjax {
+  send: (url: string, init?: RequestInit) => Promise<Response>;
+  get: (url: string) => Promise<Response>;
+  post: (url: string, body?: object) => Promise<Response>;
+  put: (url: string, body?: object) => Promise<Response>;
+  remove: (url: string, body?: object) => Promise<Response>;
+}
+
+export const getAjax = (
+  identity: IIdentity,
+  setSite: (state: ISite) => void
+) => {
+  return {
+    send: (url: string, init?: RequestInit) =>
+      send(url, init, setSite, identity),
+    get: (url: string) => get(url, setSite, identity),
+    post: (url: string, body?: object) => post(url, body, setSite, identity),
+    put: (url: string, body?: object) => put(url, body, setSite, identity),
+    remove: (url: string, body?: object) =>
+      remove(url, body, setSite, identity),
+  } as IAjax;
+};
+
+export default getAjax;
 
 /**
  * Send an HTTP ajax request to the specified 'url'.
@@ -11,18 +35,17 @@ import { SiteContext } from "../components/contexts/SiteContext";
  */
 export const send = async (
   url: string,
-  init?: RequestInit
+  init?: RequestInit,
+  setSite?: (site: ISite) => void,
+  identity?: IIdentity
 ): Promise<Response> => {
-  debugger;
-  const [, setSite] = useContext(SiteContext);
-  const [identity] = useContext(AuthenticationContext);
   const options = {
     ...init,
     method: init?.method ?? "Get",
     header: {
       ...init?.headers,
       "Access-Control-Allow-Origin": "*",
-      Authorization: `Bearer ${identity.accessToken}`,
+      Authorization: !!identity ? `Bearer ${identity?.accessToken}` : undefined,
     },
   };
 
@@ -30,9 +53,11 @@ export const send = async (
     return fetch(url, options);
   } catch (error) {
     console.log(error);
-    setSite({
-      error: error,
-    });
+    if (!!setSite) {
+      setSite({
+        error: error,
+      });
+    }
     throw error;
   }
 };
@@ -42,8 +67,12 @@ export const send = async (
  * @param url The URL to the endpoint.
  * @returns A promise.
  */
-export const get = (url: string): Promise<Response> => {
-  return send(url, { method: "Get" });
+export const get = (
+  url: string,
+  setSite?: (site: ISite) => void,
+  identity?: IIdentity
+): Promise<Response> => {
+  return send(url, { method: "Get" }, setSite, identity);
 };
 
 /**
@@ -52,14 +81,24 @@ export const get = (url: string): Promise<Response> => {
  * @param body The body to send with the AJAX request.
  * @returns A promise.
  */
-export const post = (url: string, body?: object): Promise<Response> => {
-  return send(url, {
-    method: "Post",
-    body: !!body ? JSON.stringify(body) : body,
-    headers: {
-      "Content-Type": "application/json",
+export const post = (
+  url: string,
+  body?: object,
+  setSite?: (site: ISite) => void,
+  identity?: IIdentity
+): Promise<Response> => {
+  return send(
+    url,
+    {
+      method: "Post",
+      body: !!body ? JSON.stringify(body) : body,
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  });
+    setSite,
+    identity
+  );
 };
 
 /**
@@ -68,14 +107,24 @@ export const post = (url: string, body?: object): Promise<Response> => {
  * @param body The body to send with the AJAX request.
  * @returns A promise.
  */
-export const put = (url: string, body?: object): Promise<Response> => {
-  return send(url, {
-    method: "Put",
-    body: !!body ? JSON.stringify(body) : body,
-    headers: {
-      "Content-Type": "application/json",
+export const put = (
+  url: string,
+  body?: object,
+  setSite?: (site: ISite) => void,
+  identity?: IIdentity
+): Promise<Response> => {
+  return send(
+    url,
+    {
+      method: "Put",
+      body: !!body ? JSON.stringify(body) : body,
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  });
+    setSite,
+    identity
+  );
 };
 
 /**
@@ -84,14 +133,22 @@ export const put = (url: string, body?: object): Promise<Response> => {
  * @param body The body to send with the AJAX request.
  * @returns A promise.
  */
-export const remove = (url: string, body?: object): Promise<Response> => {
-  return send(url, {
-    method: "Delete",
-    body: !!body ? JSON.stringify(body) : body,
-    headers: {
-      "Content-Type": "application/json",
+export const remove = (
+  url: string,
+  body?: object,
+  setSite?: (site: ISite) => void,
+  identity?: IIdentity
+): Promise<Response> => {
+  return send(
+    url,
+    {
+      method: "Delete",
+      body: !!body ? JSON.stringify(body) : body,
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  });
+    setSite,
+    identity
+  );
 };
-
-export default send;

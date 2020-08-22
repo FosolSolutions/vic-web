@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { FileStation, AdminItems, IFiles, IFile } from "../../../services";
+import {
+  getFileStation,
+  getAdminItems,
+  IFiles,
+  IFile,
+} from "../../../services";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Media.css";
+import { AuthenticationContext } from "../../../components/contexts/AuthenticationContext";
+import { SiteContext } from "../../../components/contexts/SiteContext";
 
 const defaultShare = "/talks";
 const defaultPath = "/talks/Exhortations";
 
 export default () => {
+  const [identity] = React.useContext(AuthenticationContext);
+  const [, setSite] = React.useContext(SiteContext);
+  const FileStation = getFileStation(identity, setSite);
+  const AdminItems = getAdminItems(identity, setSite);
   const [category, setCategory] = useState({
     path: defaultPath,
   });
