@@ -13,9 +13,9 @@ export interface IIdentity {
   email?: string;
   displayName?: string;
   accessToken?: string;
-  expiresIn?: number;
+  expiresIn?: Date;
   refreshToken?: string;
-  refreshExpiresIn?: number;
+  refreshExpiresIn?: Date;
   scope?: string;
   claims?: IClaim[];
 }
@@ -28,7 +28,7 @@ export interface IIdentity {
 export const generateIdentity = (
   token: IToken | undefined | null
 ): IIdentity => {
-  if (!token)
+  if (!token || !token.accessToken)
     return {
       isAuthenticated: false,
     };
@@ -36,12 +36,19 @@ export const generateIdentity = (
   var identity = !!token.accessToken
     ? (JwtDecode(token.accessToken) as IAccessToken)
     : ({} as IAccessToken);
+
+  const expiresIn = new Date();
+  expiresIn.setSeconds(expiresIn.getSeconds() + token.expiresIn);
+  const refreshExpiresIn = new Date();
+  refreshExpiresIn.setSeconds(
+    refreshExpiresIn.getSeconds() + token.refreshExpiresIn
+  );
   return {
     isAuthenticated: true,
     accessToken: token.accessToken,
-    expiresIn: token.expiresIn,
+    expiresIn: expiresIn,
     refreshToken: token.refreshToken,
-    refreshExpiresIn: token.refreshExpiresIn,
+    refreshExpiresIn: refreshExpiresIn,
     scope: token.scope,
     username: identity?.unique_name,
     email: identity?.email,

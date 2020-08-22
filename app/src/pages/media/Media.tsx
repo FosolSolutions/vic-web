@@ -6,15 +6,18 @@ import { Row, Col, Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import { AuthenticationContext } from "../../components/contexts/AuthenticationContext";
 import { SiteContext } from "../../components/contexts/SiteContext";
+import { useCookies } from "react-cookie";
+import Constants from "../../settings/Constants";
 
 const defaultShare = "/talks";
 const defaultPath = "/talks/Exhortations";
 
 export default () => {
   const history = useHistory();
-  const [identity] = React.useContext(AuthenticationContext);
+  const [, setCookie] = useCookies([Constants.apiUrl]);
+  const [identity, setIdentity] = React.useContext(AuthenticationContext);
   const [, setSite] = React.useContext(SiteContext);
-  const FileStation = getFileStation(identity, setSite);
+  const FileStation = getFileStation(identity, setIdentity, setSite, setCookie);
   const [category, setCategory] = useState({
     path: defaultPath,
   });

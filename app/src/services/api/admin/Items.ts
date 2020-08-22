@@ -35,9 +35,11 @@ export const remove = (id: number, item: IFile, ajax: IAjax) => {
 
 export const getItems = (
   identity: IIdentity,
-  setSite: (state: ISite) => void
+  setIdentity: (state: IIdentity) => void,
+  setSite: (state: ISite) => void,
+  setCookie: any
 ) => {
-  const ajax = getAjax(identity, setSite);
+  const ajax = getAjax(identity, setIdentity, setSite, setCookie);
   return {
     get: (id: number) => get(id, ajax),
     getByPath: (path: string) => getByPath(path, ajax),

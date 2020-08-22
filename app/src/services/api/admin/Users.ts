@@ -35,9 +35,11 @@ export const remove = (id: string, user: IUser, ajax: IAjax) => {
 
 export const getUsers = (
   identity: IIdentity,
-  setSite: (state: ISite) => void
+  setIdentity: (state: IIdentity) => void,
+  setSite: (state: ISite) => void,
+  setCookie: any
 ) => {
-  const ajax = getAjax(identity, setSite);
+  const ajax = getAjax(identity, setIdentity, setSite, setCookie);
   return {
     list: () => list(ajax),
     get: (id: string) => get(id, ajax),

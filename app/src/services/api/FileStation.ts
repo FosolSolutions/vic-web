@@ -29,9 +29,11 @@ export const thumbnail = (path: string, ajax: IAjax) => {
 
 export const getFileStation = (
   identity: IIdentity,
-  setSite: (state: ISite) => void
+  setIdentity: (state: IIdentity) => void,
+  setSite: (state: ISite) => void,
+  setCookie: any
 ) => {
-  const ajax = getAjax(identity, setSite);
+  const ajax = getAjax(identity, setIdentity, setSite, setCookie);
   return {
     shares: () => shares(ajax),
     files: (path: string) => files(path, ajax),

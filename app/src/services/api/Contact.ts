@@ -1,24 +1,19 @@
 import Constants from "../../settings/Constants";
 import getAjax, { IAjax } from "../Ajax";
-import { ILogin } from "../";
+import { IContact } from "../";
 import { IIdentity } from "../../components/contexts/AuthenticationContext";
 import { ISite } from "../../components/contexts/SiteContext";
 
-const route = `${Constants.apiUrl}/auth`;
+const route = `${Constants.apiUrl}/contact`;
 export const Routes = {
-  token: () => `${route}/token`,
-  refresh: () => `${route}/refresh`,
+  submit: () => `${route}`,
 };
 
-export const token = (login: ILogin, ajax: IAjax) => {
-  return ajax.post(Routes.token(), login);
+export const submit = (message: IContact, ajax: IAjax) => {
+  return ajax.post(Routes.submit(), message);
 };
 
-export const refresh = (ajax: IAjax) => {
-  return ajax.post(Routes.refresh(), undefined);
-};
-
-export const getAuth = (
+export const getContact = (
   identity: IIdentity,
   setIdentity: (state: IIdentity) => void,
   setSite: (state: ISite) => void,
@@ -26,9 +21,8 @@ export const getAuth = (
 ) => {
   const ajax = getAjax(identity, setIdentity, setSite, setCookie);
   return {
-    token: (login: ILogin) => token(login, ajax),
-    refresh: () => refresh(ajax),
+    submit: (message: IContact) => submit(message, ajax),
   };
 };
 
-export default getAuth;
+export default getContact;

@@ -15,7 +15,7 @@ export default () => {
   const [, setCookie] = useCookies([Constants.cookieName]);
   const [identity, setIdentity] = React.useContext(AuthenticationContext);
   const [, setSite] = React.useContext(SiteContext);
-  const Auth = getAuth(identity, setSite);
+  const Auth = getAuth(identity, setIdentity, setSite, setCookie);
   const history = useHistory();
   const [account, setAccount] = useState({
     username: undefined,
@@ -33,8 +33,10 @@ export default () => {
     event.preventDefault();
     Auth.token(account).then(async (response) => {
       const token = (await response.json()) as IToken;
+      setCookie(Constants.cookieName, token, {
+        maxAge: token.refreshExpiresIn,
+      });
       setIdentity(generateIdentity(token));
-      setCookie(Constants.cookieName, token);
       history.push("/");
     });
   };
