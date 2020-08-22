@@ -1,29 +1,23 @@
 import React, { useState, useContext } from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
-import { API } from "../../services";
+import { Auth, IToken, ILogin } from "../../services";
 import { useHistory } from "react-router-dom";
-import { AuthenticationContext } from "../../components/authentication/AuthenticationContext";
+import {
+  AuthenticationContext,
+  generateIdentity,
+} from "../../components/contexts/AuthenticationContext";
 import { useCookies } from "react-cookie";
-
-interface IToken {
-  displayName: string;
-  accessToken: string;
-}
-
-interface IAccount {
-  username?: string;
-  password?: string;
-}
+import Constants from "../../settings/Constants";
 
 export default () => {
-  const [, setCookie] = useCookies(["VicWeb"]);
-  const identity = useContext(AuthenticationContext);
+  const [, setCookie] = useCookies([Constants.cookieName]);
+  const [, setIdentity] = useContext(AuthenticationContext);
   const history = useHistory();
   const [account, setAccount] = useState({
     username: undefined,
     password: undefined,
-  } as IAccount);
-  const setField = <P extends keyof IAccount>(name: P, value: any) => {
+  } as ILogin);
+  const setField = <P extends keyof ILogin>(name: P, value: any) => {
     setAccount((state) => {
       return {
         ...state,
@@ -33,20 +27,10 @@ export default () => {
   };
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    fetch(API.Auth.Login(), {
-      method: "Post",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify(account),
-    }).then(async (response) => {
-      const data = (await response.json()) as IToken;
-      identity.setUser({
-        isAuthenticated: true,
-        displayName: data.displayName,
-      });
-      setCookie("VicWeb", data.accessToken);
+    Auth.token(account).then(async (response) => {
+      const token = (await response.json()) as IToken;
+      setIdentity(generateIdentity(token));
+      setCookie(Constants.cookieName, token);
       history.push("/");
     });
   };

@@ -1,22 +1,25 @@
 import React, { useContext } from "react";
 import "./Header.css";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faYoutube } from "@fortawesome/free-brands-svg-icons";
-import { AuthenticationContext } from "../authentication/AuthenticationContext";
+import { AuthenticationContext } from "../contexts/AuthenticationContext";
 import { useCookies } from "react-cookie";
+import Constants from "../../settings/Constants";
 
 export default () => {
-  const [, , removeCookie] = useCookies("VicWeb");
-  const identity = useContext(AuthenticationContext);
+  const history = useHistory();
+  const [, , removeCookie] = useCookies(Constants.cookieName);
+  const [identity, setIdentity] = useContext(AuthenticationContext);
   const logout = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     event.preventDefault();
-    identity.setUser({
+    setIdentity({
       isAuthenticated: false,
     });
-    removeCookie("VicWeb");
+    removeCookie(Constants.cookieName);
+    history.push("/");
   };
   return (
     <header className="topbar header">
@@ -47,7 +50,7 @@ export default () => {
                 </a>
               </li>
               <li>
-                {identity.user.isAuthenticated ? (
+                {identity.isAuthenticated ? (
                   <Link to="/" title="logout">
                     <FontAwesomeIcon icon={faUser} onClick={logout} />
                   </Link>

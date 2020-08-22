@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./Media.css";
-import { API, IFiles } from "../../services";
+import { FileStation, FileStationRoutes, IFiles } from "../../services";
 import dateFormat from "dateformat";
 import { Row, Col, Button } from "react-bootstrap";
-import { AuthenticationContext } from "../../components/authentication/AuthenticationContext";
+import { AuthenticationContext } from "../../components/contexts/AuthenticationContext";
 import { useHistory } from "react-router-dom";
 
 const defaultShare = "/talks";
@@ -11,7 +11,7 @@ const defaultPath = "/talks/Exhortations";
 
 export default () => {
   const history = useHistory();
-  const identity = useContext(AuthenticationContext);
+  const [identity] = useContext(AuthenticationContext);
   const [category, setCategory] = useState({
     path: defaultPath,
   });
@@ -25,13 +25,7 @@ export default () => {
     error: null as string | null,
   });
   useEffect(() => {
-    fetch(API.FileStation.Files(defaultShare), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    })
+    FileStation.files(defaultShare)
       .then(async (response) => {
         const data = (await response.json()) as IFiles;
         setCategories(data);
@@ -41,13 +35,7 @@ export default () => {
       });
   }, []);
   useEffect(() => {
-    fetch(API.FileStation.Files(category.path), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    })
+    FileStation.files(category.path)
       .then(async (response) => {
         const data = (await response.json()) as IFiles;
         setData({
@@ -69,7 +57,7 @@ export default () => {
           <h1>Media</h1>
         </Col>
         <Col sm={1}>
-          {identity.user.isAuthenticated ? (
+          {identity.isAuthenticated ? (
             <Button onClick={() => history.push("/admin/media")}>Edit</Button>
           ) : (
             ""
@@ -100,7 +88,7 @@ export default () => {
               return (
                 <li key={share.name}>
                   <div>
-                    <a href={API.FileStation.Download(share.path)}>
+                    <a href={FileStationRoutes.download(share.path)}>
                       {share.name}
                     </a>
                     {share.author ? ` - ${share.author}` : ""}

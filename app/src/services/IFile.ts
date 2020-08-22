@@ -1,4 +1,4 @@
-interface IFile {
+export default interface IFile {
   id?: number;
   name: string;
   path: string;
@@ -9,5 +9,3 @@ interface IFile {
   createdOn?: Date;
   updatedOn?: Date;
 }
-
-export default IFile;

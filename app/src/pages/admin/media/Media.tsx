@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { API, IFiles, IFile } from "../../../services";
+import { FileStation, AdminItems, IFiles, IFile } from "../../../services";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -22,13 +22,7 @@ export default () => {
     error: null as string | null,
   });
   useEffect(() => {
-    fetch(API.FileStation.Files(defaultShare), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    })
+    FileStation.files(defaultShare)
       .then(async (response) => {
         const data = (await response.json()) as IFiles;
         setCategories(data);
@@ -38,13 +32,7 @@ export default () => {
       });
   }, []);
   useEffect(() => {
-    fetch(API.FileStation.Files(category.path), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    })
+    FileStation.files(category.path)
       .then(async (response) => {
         const data = (await response.json()) as IFiles;
         setData({
@@ -89,69 +77,47 @@ export default () => {
 
     if (validateForm()) {
       if (item.id) {
-        fetch(API.Admin.Items.Update(item.id as number), {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
-          body: JSON.stringify(item),
-        })
-          .then(async (response) => {
-            if (response.ok) {
-              const data = (await response.json()) as IFile;
-              setData((state) => {
-                return {
-                  ...state,
-                  response: {
-                    ...state.response,
-                    items: [
-                      ...state.response.items.slice(0, index),
-                      data,
-                      ...state.response.items.slice(index + 1),
-                    ],
-                  },
-                };
-              });
-            } else {
-              console.log("Request failed");
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        AdminItems.update(item.id as number, item).then(async (response) => {
+          if (response.ok) {
+            const data = (await response.json()) as IFile;
+            setData((state) => {
+              return {
+                ...state,
+                response: {
+                  ...state.response,
+                  items: [
+                    ...state.response.items.slice(0, index),
+                    data,
+                    ...state.response.items.slice(index + 1),
+                  ],
+                },
+              };
+            });
+          } else {
+            console.log("Request failed");
+          }
+        });
       } else {
-        fetch(API.Admin.Items.Add(), {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
-          body: JSON.stringify(item),
-        })
-          .then(async (response) => {
-            if (response.ok) {
-              const data = (await response.json()) as IFile;
-              setData((state) => {
-                return {
-                  ...state,
-                  response: {
-                    ...state.response,
-                    items: [
-                      ...state.response.items.slice(0, index),
-                      data,
-                      ...state.response.items.slice(index + 1),
-                    ],
-                  },
-                };
-              });
-            } else {
-              console.log("Request failed");
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        AdminItems.add(item).then(async (response) => {
+          if (response.ok) {
+            const data = (await response.json()) as IFile;
+            setData((state) => {
+              return {
+                ...state,
+                response: {
+                  ...state.response,
+                  items: [
+                    ...state.response.items.slice(0, index),
+                    data,
+                    ...state.response.items.slice(index + 1),
+                  ],
+                },
+              };
+            });
+          } else {
+            console.log("Request failed");
+          }
+        });
       }
     }
   };
