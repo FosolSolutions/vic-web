@@ -251,7 +251,8 @@ export const token = async (
   setCookie: (name: string, value: any, options?: object) => {}
 ) => {
   try {
-    if (!state.oauth?.tokenUrl) throw "Oauth configuration missing 'tokenUrl'.";
+    if (!state.oauth?.tokenUrl)
+      throw new Error("Oauth configuration missing 'tokenUrl'.");
     const response = await post(state.oauth?.tokenUrl, credentials);
     const token = (await response.json()) as IToken;
     setCookie(CookieName, token, {
@@ -273,7 +274,7 @@ export const token = async (
         error: error,
       } as IAppState;
     });
-    throw error;
+    throw new Error(error);
   }
 };
 
@@ -284,7 +285,7 @@ export const refresh = async (
 ) => {
   try {
     if (!state.oauth?.refreshUrl)
-      throw "Oauth configuration missing 'refreshUrl'.";
+      throw new Error("Oauth configuration missing 'refreshUrl'.");
     const response = await post(state.oauth?.refreshUrl, undefined, {
       headers: {
         Authorization: `Bearer ${state.identity.refreshToken}`,
@@ -310,7 +311,7 @@ export const refresh = async (
         error: error,
       } as IAppState;
     });
-    throw error;
+    throw new Error(error);
   }
 };
 

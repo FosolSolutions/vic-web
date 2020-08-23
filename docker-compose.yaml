@@ -54,4 +54,6 @@ networks:
 
 volumes:
   node-cache:
+    name: vic-web-node_modules
   database:
+    name: vic-api-db
