@@ -1,22 +1,27 @@
-import React, { useContext } from "react";
+import React from "react";
 import "./Header.css";
 import { Link, useHistory } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faYoutube } from "@fortawesome/free-brands-svg-icons";
-import { AuthenticationContext } from "../contexts/AuthenticationContext";
 import { useCookies } from "react-cookie";
 import Constants from "../../settings/Constants";
+import useAppContext from "components/contexts/useAppContext";
 
 export default () => {
   const history = useHistory();
+  const [state, setState] = useAppContext();
   const [, , removeCookie] = useCookies(Constants.cookieName);
-  const [identity, setIdentity] = useContext(AuthenticationContext);
   const logout = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     event.preventDefault();
-    setIdentity({
-      isAuthenticated: false,
+    setState((state) => {
+      return {
+        ...state,
+        identity: {
+          isAuthenticated: false,
+        },
+      };
     });
     removeCookie(Constants.cookieName);
     history.push("/");
@@ -50,7 +55,7 @@ export default () => {
                 </a>
               </li>
               <li>
-                {identity.isAuthenticated ? (
+                {state.identity.isAuthenticated ? (
                   <Link to="/" title="logout">
                     <FontAwesomeIcon icon={faUser} onClick={logout} />
                   </Link>

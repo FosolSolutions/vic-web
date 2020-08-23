@@ -6,36 +6,29 @@ import Nav from "./components/nav/Nav";
 import Main from "./components/main/Main";
 import Footer from "./components/footer/Footer";
 import { Container, Alert } from "react-bootstrap";
-import {
-  AuthenticationContext,
-  generateIdentity,
-} from "./components/contexts/AuthenticationContext";
-import { SiteContext, ISite } from "./components/contexts/SiteContext";
-import { useCookies } from "react-cookie";
-import Constants from "./settings/Constants";
-import { IToken } from "./services";
+import { AppProvider, defaultState } from "./components/contexts/AppContext";
+import { AuthRoutes } from "./services";
 
 export default () => {
   // If a cookie exists, parse it and initialize state.
-  const [cookies] = useCookies([Constants.cookieName]);
-  const token = cookies[Constants.cookieName] as IToken;
-  const [site, setSite] = useState({} as ISite);
-  const [identity, setIdentity] = useState(generateIdentity(token));
+  const [state, setState] = useState(defaultState);
   return (
-    <SiteContext.Provider value={[site, setSite]}>
-      <AuthenticationContext.Provider value={[identity, setIdentity]}>
-        <Router>
-          <div className="App">
-            <Header />
-            <Container className="main">
-              <Nav />
-              {!!site.error ? <Alert variant="danger">{site.error}</Alert> : ""}
-              <Main />
-            </Container>
-            <Footer />
-          </div>
-        </Router>
-      </AuthenticationContext.Provider>
-    </SiteContext.Provider>
+    <AppProvider
+      tokenUrl={AuthRoutes.token()}
+      refreshUrl={AuthRoutes.refresh()}
+      value={[state, setState]}
+    >
+      <Router>
+        <div className="App">
+          <Header />
+          <Container className="main">
+            <Nav />
+            {!!state.error ? <Alert variant="danger">{state.error}</Alert> : ""}
+            <Main />
+          </Container>
+          <Footer />
+        </div>
+      </Router>
+    </AppProvider>
   );
 };

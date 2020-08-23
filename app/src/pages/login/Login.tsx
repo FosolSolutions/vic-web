@@ -1,21 +1,11 @@
 import React, { useState } from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
-import { IToken, ILogin } from "../../services";
+import { ILogin } from "../../services";
 import { useHistory } from "react-router-dom";
-import {
-  AuthenticationContext,
-  generateIdentity,
-} from "../../components/contexts/AuthenticationContext";
-import { SiteContext } from "../../components/contexts/SiteContext";
-import { useCookies } from "react-cookie";
-import Constants from "../../settings/Constants";
-import { getAuth } from "../../services";
+import useAppContext from "components/contexts/useAppContext";
 
 export default () => {
-  const [, setCookie] = useCookies([Constants.cookieName]);
-  const [identity, setIdentity] = React.useContext(AuthenticationContext);
-  const [, setSite] = React.useContext(SiteContext);
-  const Auth = getAuth(identity, setIdentity, setSite, setCookie);
+  const [, , , oauth] = useAppContext();
   const history = useHistory();
   const [account, setAccount] = useState({
     username: undefined,
@@ -31,12 +21,8 @@ export default () => {
   };
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    Auth.token(account).then(async (response) => {
-      const token = (await response.json()) as IToken;
-      setCookie(Constants.cookieName, token, {
-        maxAge: token.refreshExpiresIn,
-      });
-      setIdentity(generateIdentity(token));
+    debugger;
+    oauth.token(account).then(() => {
       history.push("/");
     });
   };

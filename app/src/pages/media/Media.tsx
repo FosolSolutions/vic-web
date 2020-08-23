@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from "react";
 import "./Media.css";
-import { getFileStation, FileStationRoutes, IFiles } from "../../services";
+import { FileStationRoutes, IFiles } from "../../services";
 import dateFormat from "dateformat";
 import { Row, Col, Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
-import { AuthenticationContext } from "../../components/contexts/AuthenticationContext";
-import { SiteContext } from "../../components/contexts/SiteContext";
-import { useCookies } from "react-cookie";
-import Constants from "../../settings/Constants";
+import useAppContext from "components/contexts/useAppContext";
 
 const defaultShare = "/talks";
 const defaultPath = "/talks/Exhortations";
 
 export default () => {
   const history = useHistory();
-  const [, setCookie] = useCookies([Constants.apiUrl]);
-  const [identity, setIdentity] = React.useContext(AuthenticationContext);
-  const [, setSite] = React.useContext(SiteContext);
-  const FileStation = getFileStation(identity, setIdentity, setSite, setCookie);
+  const [state, , ajax] = useAppContext();
   const [category, setCategory] = useState({
     path: defaultPath,
   });
@@ -31,7 +25,8 @@ export default () => {
     error: null as string | null,
   });
   useEffect(() => {
-    FileStation.files(defaultShare)
+    ajax
+      .get(FileStationRoutes.files(defaultShare))
       .then(async (response) => {
         const data = (await response.json()) as IFiles;
         setCategories(data);
@@ -41,7 +36,8 @@ export default () => {
       });
   }, []);
   useEffect(() => {
-    FileStation.files(category.path)
+    ajax
+      .get(FileStationRoutes.files(category.path))
       .then(async (response) => {
         const data = (await response.json()) as IFiles;
         setData({
@@ -63,7 +59,7 @@ export default () => {
           <h1>Media</h1>
         </Col>
         <Col sm={1}>
-          {identity.isAuthenticated ? (
+          {state.identity.isAuthenticated ? (
             <Button onClick={() => history.push("/admin/media")}>Edit</Button>
           ) : (
             ""

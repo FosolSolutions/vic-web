@@ -1,28 +1,21 @@
 import React, { useState, useEffect } from "react";
 import {
-  getFileStation,
-  getAdminItems,
   IFiles,
   IFile,
+  FileStationRoutes,
+  AdminItemsRoutes,
 } from "../../../services";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Media.css";
-import { AuthenticationContext } from "../../../components/contexts/AuthenticationContext";
-import { SiteContext } from "../../../components/contexts/SiteContext";
-import { useCookies } from "react-cookie";
-import Constants from "../../../settings/Constants";
+import useAppContext from "components/contexts/useAppContext";
 
 const defaultShare = "/talks";
 const defaultPath = "/talks/Exhortations";
 
 export default () => {
-  const [, setCookie] = useCookies([Constants.apiUrl]);
-  const [identity, setIdentity] = React.useContext(AuthenticationContext);
-  const [, setSite] = React.useContext(SiteContext);
-  const FileStation = getFileStation(identity, setIdentity, setSite, setCookie);
-  const AdminItems = getAdminItems(identity, setIdentity, setSite, setCookie);
+  const [, , ajax] = useAppContext();
   const [category, setCategory] = useState({
     path: defaultPath,
   });
@@ -36,7 +29,8 @@ export default () => {
     error: null as string | null,
   });
   useEffect(() => {
-    FileStation.files(defaultShare)
+    ajax
+      .get(FileStationRoutes.files(defaultShare))
       .then(async (response) => {
         const data = (await response.json()) as IFiles;
         setCategories(data);
@@ -46,7 +40,8 @@ export default () => {
       });
   }, []);
   useEffect(() => {
-    FileStation.files(category.path)
+    ajax
+      .get(FileStationRoutes.files(category.path))
       .then(async (response) => {
         const data = (await response.json()) as IFiles;
         setData({
@@ -91,28 +86,30 @@ export default () => {
 
     if (validateForm()) {
       if (item.id) {
-        AdminItems.update(item.id as number, item).then(async (response) => {
-          if (response.ok) {
-            const data = (await response.json()) as IFile;
-            setData((state) => {
-              return {
-                ...state,
-                response: {
-                  ...state.response,
-                  items: [
-                    ...state.response.items.slice(0, index),
-                    data,
-                    ...state.response.items.slice(index + 1),
-                  ],
-                },
-              };
-            });
-          } else {
-            console.log("Request failed");
-          }
-        });
+        ajax
+          .put(AdminItemsRoutes.update(item.id as number), item)
+          .then(async (response) => {
+            if (response.ok) {
+              const data = (await response.json()) as IFile;
+              setData((state) => {
+                return {
+                  ...state,
+                  response: {
+                    ...state.response,
+                    items: [
+                      ...state.response.items.slice(0, index),
+                      data,
+                      ...state.response.items.slice(index + 1),
+                    ],
+                  },
+                };
+              });
+            } else {
+              console.log("Request failed");
+            }
+          });
       } else {
-        AdminItems.add(item).then(async (response) => {
+        ajax.put(AdminItemsRoutes.add(), item).then(async (response) => {
           if (response.ok) {
             const data = (await response.json()) as IFile;
             setData((state) => {

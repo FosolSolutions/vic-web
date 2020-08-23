@@ -1,11 +1,8 @@
 import React from "react";
 import { Row, Col, Form, Button, InputGroup, Alert } from "react-bootstrap";
-import { AuthenticationContext } from "../../components/contexts/AuthenticationContext";
-import { SiteContext } from "../../components/contexts/SiteContext";
-import { useCookies } from "react-cookie";
-import Constants from "../../settings/Constants";
-import { getContact } from "../../services";
+import { ContactRoutes } from "../../services";
 import { IContact } from "../../services";
+import useAppContext from "components/contexts/useAppContext";
 
 interface IState {
   messageSent: boolean;
@@ -14,10 +11,7 @@ interface IState {
 }
 
 export default () => {
-  const [, setCookie] = useCookies([Constants.apiUrl]);
-  const [identity, setIdentity] = React.useContext(AuthenticationContext);
-  const [, setSite] = React.useContext(SiteContext);
-  const Contact = getContact(identity, setIdentity, setSite, setCookie);
+  const [, , ajax] = useAppContext();
   const [contact, setContact] = React.useState({
     messageSent: false,
     message: {},
@@ -44,7 +38,7 @@ export default () => {
       contact.message.subject &&
       contact.message.body
     ) {
-      Contact.submit(contact.message).then(() => {
+      ajax.post(ContactRoutes.submit(), contact.message).then(() => {
         setContact({
           ...contact,
           messageSent: true,
