@@ -1,6 +1,7 @@
 import React from "react";
 import JwtDecode from "jwt-decode";
 import { IToken, IAccessToken, ILogin } from "../../services";
+import { Spinner, Overlay } from "react-bootstrap";
 
 export const CookieName = "app-context";
 
@@ -39,6 +40,7 @@ export interface IAppState {
   identity: IIdentity;
   error?: string;
   oauth?: IOauth;
+  requestCount: number;
 }
 
 /**
@@ -137,7 +139,10 @@ const makeRequest = async (
   setState?: React.Dispatch<React.SetStateAction<IAppState>>,
   setCookie?: (name: string, value: any, options?: object) => {}
 ) => {
-  console.log("access token: " + state?.identity.accessToken); // The current token.
+  if (setState)
+    setState((s) => {
+      return { ...s, requestCount: s.requestCount++ };
+    });
   const now = new Date();
   // Check if the access token has expired. // TODO: If the refresh token has expired need to throw.
   if (
@@ -152,7 +157,6 @@ const makeRequest = async (
     // Make a request to refresh the access token.
     const token = await refresh(state, setState, setCookie);
     state.identity.accessToken = token.accessToken; // Need to do this because state isn't guarenteed to be updated yet.
-    console.log("refreshed access token: " + state.identity.accessToken);
   }
 
   // If there is an access token include it in the request.
@@ -165,7 +169,14 @@ const makeRequest = async (
         },
       }
     : options;
-  return fetch(url, init);
+  return fetch(url, init).finally(() => {
+    // TODO: Find out why this is firing twice for the first request.
+    if (setState)
+      setState((s) => {
+        const rc = s.requestCount - 1 >= 1 ? s.requestCount - 1 : 0;
+        return { ...s, requestCount: rc };
+      });
+  });
 };
 
 export const send = (
@@ -320,6 +331,8 @@ export const defaultState = {
   identity: {
     isAuthenticated: false,
   },
+  isLoading: false,
+  requestCount: 0,
 } as IAppState;
 
 export const defaultSetState = () => {};
@@ -341,10 +354,39 @@ export const AppProvider = (props: React.PropsWithChildren<any>) => {
       refreshUrl: props.refreshUrl,
     },
   } as IAppState);
+  const target = React.useRef(null);
 
   return (
     <AppContext.Provider value={[state, setState]}>
-      {props.children}
+      <div ref={target}>{props.children}</div>
+      <Overlay
+        target={target.current}
+        show={state.requestCount > 0}
+        placement="auto"
+      >
+        <div
+          style={{
+            opacity: 0.25,
+            backgroundColor: "#000",
+            width: "99%",
+            height: "99%",
+            textAlign: "center",
+          }}
+        >
+          <Spinner
+            animation="border"
+            role="status"
+            style={{
+              position: "absolute",
+              top: "50%",
+              opacity: 1,
+              color: "green",
+            }}
+          >
+            <span className="sr-only">Loading...</span>
+          </Spinner>
+        </div>
+      </Overlay>
     </AppContext.Provider>
   );
 };

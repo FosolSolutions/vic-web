@@ -86,6 +86,11 @@ export default () => {
         </Col>
         <Col sm={10}>
           <ul>
+            {data.response.items.length == 0 ? (
+              <li>
+                <span>No media found.</span>
+              </li>
+            ) : null}
             {data.response?.items?.map((share) => {
               return (
                 <li key={share.name}>

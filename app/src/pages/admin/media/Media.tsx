@@ -163,6 +163,11 @@ export default () => {
         </Col>
         <Col sm={10} className="files">
           <ul>
+            {data.response.items.length == 0 ? (
+              <li>
+                <span>No media found.</span>
+              </li>
+            ) : null}
             {data.response.items.map((item, i) => {
               return (
                 <li key={item.path}>

@@ -21,7 +21,6 @@ export default () => {
   };
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    debugger;
     oauth.token(account).then(() => {
       history.push("/");
     });

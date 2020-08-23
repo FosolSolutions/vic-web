@@ -3,7 +3,7 @@ import "./Header.css";
 import { Link, useHistory } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faSignInAlt, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { useCookies } from "react-cookie";
 import Constants from "../../settings/Constants";
@@ -57,11 +57,11 @@ export default () => {
               <li>
                 {state.identity.isAuthenticated ? (
                   <Link to="/" title="logout">
-                    <FontAwesomeIcon icon={faUser} onClick={logout} />
+                    <FontAwesomeIcon icon={faSignOutAlt} onClick={logout} />
                   </Link>
                 ) : (
                   <Link to="/login" title="login">
-                    <FontAwesomeIcon icon={faUser} />
+                    <FontAwesomeIcon icon={faSignInAlt} />
                   </Link>
                 )}
               </li>
