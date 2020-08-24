@@ -9,7 +9,7 @@ import { Row, Col, Form, Button } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Media.css";
-import useAppContext from "components/contexts/useAppContext";
+import { useAppContext } from "components/contexts/app-context";
 
 const defaultShare = "/talks";
 const defaultPath = "/talks/Exhortations";

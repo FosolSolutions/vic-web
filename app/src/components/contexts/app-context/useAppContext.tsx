@@ -1,13 +1,9 @@
 import React from "react";
-import { ILogin } from "../../services";
+import { ILogin } from "../../../services";
 import { useCookies } from "react-cookie";
-import AppContext, {
-  CookieName,
-  oAuthFactory,
-  ajaxFactory,
-  IAjaxFactory,
-  IOauthFactory,
-} from "./AppContext";
+import { IOauthFactory, IAjaxFactory } from "./";
+import AppContext, { CookieName } from "./AppContext";
+import { oAuthFactory, ajaxFactory } from "./Ajax";
 
 const useAppContext = () => {
   const [state, setState] = React.useContext(AppContext);

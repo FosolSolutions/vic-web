@@ -7,7 +7,7 @@ import { faSignInAlt, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { useCookies } from "react-cookie";
 import Constants from "../../settings/Constants";
-import useAppContext from "components/contexts/useAppContext";
+import { useAppContext } from "components/contexts/app-context";
 
 export default () => {
   const history = useHistory();

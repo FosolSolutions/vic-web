@@ -2,7 +2,7 @@ import React from "react";
 import { Row, Col, Form, Button, InputGroup, Alert } from "react-bootstrap";
 import { ContactRoutes } from "../../services";
 import { IContact } from "../../services";
-import useAppContext from "components/contexts/useAppContext";
+import { useAppContext } from "components/contexts/app-context";
 
 interface IState {
   messageSent: boolean;

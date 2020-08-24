@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import { ILogin } from "../../services";
 import { useHistory } from "react-router-dom";
-import useAppContext from "components/contexts/useAppContext";
+import { useAppContext } from "components/contexts/app-context";
 
 export default () => {
   const [, , , oauth] = useAppContext();
   const history = useHistory();
   const [account, setAccount] = useState({
-    username: undefined,
-    password: undefined,
+    username: "",
+    password: "",
   } as ILogin);
   const setField = <P extends keyof ILogin>(name: P, value: any) => {
     setAccount((state) => {
@@ -41,6 +41,7 @@ export default () => {
               <Form.Control
                 type="text"
                 name="username"
+                placeholder="email"
                 value={account.username}
                 onChange={(e) => setField("username", e.target.value)}
               ></Form.Control>
@@ -50,6 +51,7 @@ export default () => {
               <Form.Control
                 type="password"
                 name="password"
+                placeholder="password"
                 value={account.password}
                 onChange={(e) => setField("password", e.target.value)}
               ></Form.Control>

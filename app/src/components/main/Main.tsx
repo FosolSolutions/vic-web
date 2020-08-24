@@ -12,7 +12,7 @@ import {
   Seminars,
   AdminMedia,
 } from "../../pages";
-import useAppContext from "components/contexts/useAppContext";
+import { useAppContext } from "components/contexts/app-context";
 
 export default () => {
   const [state] = useAppContext();

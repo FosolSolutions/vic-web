@@ -6,8 +6,8 @@ import Nav from "./components/nav/Nav";
 import Main from "./components/main/Main";
 import Footer from "./components/footer/Footer";
 import { Container, Alert } from "react-bootstrap";
-import { AppProvider, defaultState } from "./components/contexts/AppContext";
 import { AuthRoutes } from "./services";
+import { AppProvider, defaultState } from "./components/contexts/app-context";
 
 export default () => {
   // If a cookie exists, parse it and initialize state.
