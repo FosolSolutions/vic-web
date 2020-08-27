@@ -232,7 +232,12 @@ const ItemForm = (
 
   const handleDelete = () => {
     ajax
-      .remove(AdminItemsRoutes.remove(item.id as number), item)
+      .remove(
+        item.id
+          ? AdminItemsRoutes.remove(item.id)
+          : FileStationRoutes.remove(item.path),
+        item
+      )
       .then(async (response) => {
         if (response.ok) {
           setData((s) => {
