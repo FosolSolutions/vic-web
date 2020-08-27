@@ -1,17 +1,33 @@
 // string | Blob | ArrayBufferView | ArrayBuffer | FormData | URLSearchParams | ReadableStream<Uint8Array> | null | undefined
-const serialize = (data?: any, options?: RequestInit): RequestInit => {
+export default (data?: any, options?: RequestInit): RequestInit => {
   const headers = {
     ...options?.headers,
-    "Access-Control-Allow-Origin": "*",
-  };
+  } as any;
   const type = typeof data;
+  if (
+    headers["Content-Type"] === "multipart/form-data" &&
+    !(data instanceof FormData)
+  ) {
+    debugger;
+    const form = new FormData();
+    for (const [key, value] of Object.entries(data)) {
+      form.append(key, `${value}`);
+    }
+    return {
+      ...options,
+      body: form,
+      headers: {
+        ...headers,
+      },
+    };
+  }
   if (type === "string" && data?.length > 0 && data[0] === "{")
     return {
       ...options,
       body: data,
       headers: {
-        ...headers,
         "Content-Type": "application/json",
+        ...headers,
       },
     };
   if (
@@ -32,13 +48,22 @@ const serialize = (data?: any, options?: RequestInit): RequestInit => {
       body: data.toString(),
       headers: headers,
     };
+  if (data instanceof FormData)
+    return {
+      ...options,
+      body: data,
+      headers: {
+        "Content-Type": "multipart/form-data",
+        ...headers,
+      },
+    };
   if (data instanceof Object)
     return {
       ...options,
       body: JSON.stringify(data),
       headers: {
-        ...headers,
         "Content-Type": "application/json",
+        ...headers,
       },
     };
   return {
@@ -47,5 +72,3 @@ const serialize = (data?: any, options?: RequestInit): RequestInit => {
     headers: headers,
   };
 };
-
-export default serialize;

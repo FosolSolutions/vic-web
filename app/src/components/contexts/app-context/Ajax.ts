@@ -1,4 +1,4 @@
-import { IAppState, serialize, generateIdentity } from ".";
+import { IAppState, prepareBody, generateIdentity } from ".";
 import { ILogin, IToken } from "services";
 import { CookieName } from "./AppContext";
 
@@ -42,8 +42,9 @@ const makeRequest = async (
     ? {
         ...options,
         headers: {
-          ...options?.headers,
+          "Access-Control-Allow-Origin": "*",
           Authorization: `Bearer ${state.identity.accessToken}`,
+          ...options?.headers,
         },
       }
     : options;
@@ -83,7 +84,7 @@ export const post = (
 ) =>
   makeRequest(
     url,
-    { ...serialize(data, options), method: "Post" },
+    { ...prepareBody(data, options), method: "Post" },
     state,
     setState,
     setCookie
@@ -99,7 +100,7 @@ export const put = (
 ) =>
   makeRequest(
     url,
-    { ...serialize(data, options), method: "Put" },
+    { ...prepareBody(data, options), method: "Put" },
     state,
     setState,
     setCookie
@@ -115,7 +116,7 @@ export const remove = (
 ) =>
   makeRequest(
     url,
-    { ...serialize(data, options), method: "Delete" },
+    { ...prepareBody(data, options), method: "Delete" },
     state,
     setState,
     setCookie

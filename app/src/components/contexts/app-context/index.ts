@@ -5,7 +5,7 @@ export type { default as IIdentity } from "./IIdentity";
 export type { default as IOauth } from "./IOauth";
 export type { default as IOauthFactory } from "./IOauthFactory";
 export { default as generateIdentity } from "./generateIdentity";
-export { default as serialize } from "./serialize";
+export { default as prepareBody } from "./prepareBody";
 export { default as useAppContext } from "./useAppContext";
 export {
   default as AppContext,
