@@ -5,9 +5,9 @@ export default interface IAccessToken {
   given_name?: string;
   family_name?: string;
   display_name?: string;
-  nbf?: number;
-  exp?: number;
-  iat?: number;
+  nbf?: number | Date;
+  exp?: number | Date;
+  iat?: number | Date;
   iss?: string;
   aud?: string;
 }

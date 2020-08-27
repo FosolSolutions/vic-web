@@ -1,6 +1,8 @@
 import React from "react";
+import { useCookies } from "react-cookie";
 import { Spinner } from "react-bootstrap";
 import { IAppState } from ".";
+import generateIdentity from "./generateIdentity";
 
 export const CookieName = "app-context";
 
@@ -19,8 +21,14 @@ const AppContext = React.createContext<
 >([defaultState, defaultSetState]);
 
 export const AppProvider = (props: React.PropsWithChildren<any>) => {
+  const [cookies] = useCookies([CookieName]);
+  const cookie = cookies[CookieName];
+  const identity = cookie
+    ? generateIdentity(cookie)
+    : { isAuthenticated: false };
   const [state, setState] = React.useState({
     ...defaultState,
+    identity: identity,
     oauth: {
       tokenUrl: props.tokenUrl,
       refreshUrl: props.refreshUrl,

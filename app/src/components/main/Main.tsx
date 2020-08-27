@@ -10,7 +10,6 @@ import {
   Login,
   Media,
   Seminars,
-  AdminMedia,
 } from "../../pages";
 import { useAppContext } from "components/contexts/app-context";
 
@@ -22,7 +21,6 @@ export default () => {
         {!state.identity?.isAuthenticated ? (
           <Redirect exact path="/admin/media" to="/login" />
         ) : null}
-        <Route path="/admin/media" component={AdminMedia} />
         <Route path="/conference" component={Conference} />
         <Route path="/contact" component={Contact} />
         <Route path="/donate" component={Donate} />

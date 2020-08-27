@@ -13,22 +13,39 @@ const generateIdentity = (token: IToken | undefined | null): IIdentity => {
       isAuthenticated: false,
     };
 
-  var identity = !!token.accessToken
+  const identity = !!token.accessToken
     ? (JwtDecode(token.accessToken) as IAccessToken)
     : ({} as IAccessToken);
 
-  const expiresIn = new Date();
-  expiresIn.setSeconds(expiresIn.getSeconds() + token.expiresIn);
-  const refreshExpiresIn = new Date();
-  refreshExpiresIn.setSeconds(
-    refreshExpiresIn.getSeconds() + token.refreshExpiresIn
-  );
+  if (identity.exp) {
+    const expiresIn = new Date(0);
+    expiresIn.setUTCSeconds(identity.exp as number);
+    identity.exp = identity.exp ? expiresIn : undefined;
+
+    const notValidBefore = new Date(0);
+    notValidBefore.setUTCSeconds(identity.nbf as number);
+    identity.nbf = identity.nbf ? notValidBefore : undefined;
+
+    const issuedAt = new Date(0);
+    issuedAt.setUTCSeconds(identity.iat as number);
+    identity.iat = identity.iat ? issuedAt : undefined;
+  }
+
+  const refresh = !!token.refreshToken
+    ? (JwtDecode(token.refreshToken) as IAccessToken)
+    : ({} as IAccessToken);
+
+  if (refresh.exp) {
+    const expiresIn = new Date(0);
+    expiresIn.setUTCSeconds(refresh.exp as number);
+    refresh.exp = refresh.exp ? expiresIn : undefined;
+  }
   return {
     isAuthenticated: true,
     accessToken: token.accessToken,
-    expiresIn: expiresIn,
+    expiresIn: identity.exp as Date,
     refreshToken: token.refreshToken,
-    refreshExpiresIn: refreshExpiresIn,
+    refreshExpiresIn: refresh.exp as Date,
     scope: token.scope,
     username: identity?.unique_name,
     email: identity?.email,
