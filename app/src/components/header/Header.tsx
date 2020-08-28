@@ -3,7 +3,11 @@ import "./Header.css";
 import { Link, useHistory } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignInAlt, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSignInAlt,
+  faSignOutAlt,
+  faCog,
+} from "@fortawesome/free-solid-svg-icons";
 import { faFacebook, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { useCookies } from "react-cookie";
 import Constants from "../../settings/Constants";
@@ -54,6 +58,13 @@ export default () => {
                   <FontAwesomeIcon icon={faYoutube} />
                 </a>
               </li>
+              {state.identity.isAuthenticated ? (
+                <li>
+                  <Link to="/admin/pages" title="admin">
+                    <FontAwesomeIcon icon={faCog} />
+                  </Link>
+                </li>
+              ) : null}
               <li>
                 {state.identity.isAuthenticated ? (
                   <Link to="/" title="logout">

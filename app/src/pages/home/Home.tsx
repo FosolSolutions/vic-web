@@ -1,10 +1,21 @@
 import React from "react";
 import "./Home.css";
 import { Row, Col } from "react-bootstrap";
+import { AdminPagesRoutes, IPage } from "services";
+import { useAppContext } from "components/contexts/app-context";
 
 export default () => {
+  const [, , ajax] = useAppContext();
+  const [html, setHtml] = React.useState({ __html: "" });
+  React.useEffect(() => {
+    ajax.get(AdminPagesRoutes.getForPath("/home")).then(async (response) => {
+      const page = (await response.json()) as IPage;
+      setHtml({ __html: page.body });
+    });
+  }, []);
+
   return (
-    <React.Fragment>
+    <>
       <Row>
         <Col sm={12} className="text-center">
           <img
@@ -19,31 +30,7 @@ export default () => {
       </Row>
       <Row>&nbsp;</Row>
       <Row>
-        <Col sm={8}>
-          <p>
-            We hold to beliefs which reflect the simple teaching of Jesus Christ
-            and his Apostles. Our rule of life is to follow in the footsteps of
-            Jesus and his disciples.
-          </p>
-          <p>
-            Our hopes are centred upon the return of Jesus, when he will bring
-            everlasting life to the faithful and set up on earth the
-            long-promised Kingdom of God, which will be the restored Kingdom of
-            Israel under divine leadership.
-          </p>
-          <p className="red bold">
-            Unfortunately due to the COVID-19 pandemic and the related
-            provincial restrictions on public gatherings and social distancing
-            measures, our regular public gatherings are suspended until further
-            notice.
-          </p>
-          <p className="bold">
-            We will continue to offer a memorial service Sundays at 11AM Pacific
-            Time (10AM July-August), provided primarily online, and hope to add
-            further events soon. Please see our Events page for more
-            information.
-          </p>
-        </Col>
+        <Col sm={8} dangerouslySetInnerHTML={html}></Col>
         <Col sm={4}>
           <iframe
             title="Directions"
@@ -55,6 +42,6 @@ export default () => {
           ></iframe>
         </Col>
       </Row>
-    </React.Fragment>
+    </>
   );
 };

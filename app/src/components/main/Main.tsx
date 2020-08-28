@@ -10,6 +10,7 @@ import {
   Login,
   Media,
   Seminars,
+  AdminPages,
 } from "../../pages";
 import { useAppContext } from "components/contexts/app-context";
 
@@ -19,8 +20,9 @@ export default () => {
     <React.Fragment>
       <Switch>
         {!state.identity?.isAuthenticated ? (
-          <Redirect exact path="/admin/media" to="/login" />
+          <Redirect exact path="/admin/pages" to="/login" />
         ) : null}
+        <Route path="/admin/pages" component={AdminPages} />
         <Route path="/conference" component={Conference} />
         <Route path="/contact" component={Contact} />
         <Route path="/donate" component={Donate} />

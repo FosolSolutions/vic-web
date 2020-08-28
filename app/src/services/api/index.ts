@@ -6,5 +6,5 @@ export { Routes as ContactRoutes } from "./Contact";
 
 // Administration
 export { Routes as AdminItemsRoutes } from "./admin/Items";
-
 export { Routes as AdminUsersRoutes } from "./admin/Users";
+export { Routes as AdminPagesRoutes } from "./admin/Pages";

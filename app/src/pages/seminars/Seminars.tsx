@@ -1,10 +1,21 @@
 import React from "react";
+import { useAppContext } from "components/contexts/app-context";
+import { AdminPagesRoutes, IPage } from "services";
 
 export default () => {
+  const [, , ajax] = useAppContext();
+  const [html, setHtml] = React.useState({ __html: "" });
+  React.useEffect(() => {
+    ajax
+      .get(AdminPagesRoutes.getForPath("/seminars"))
+      .then(async (response) => {
+        const page = (await response.json()) as IPage;
+        setHtml({ __html: page.body });
+      });
+  }, []);
   return (
-    <div>
-      <h1>Free Seminars</h1>
-      <p className="bold">Check back for details on upcoming seminars.</p>
-    </div>
+    <>
+      <div dangerouslySetInnerHTML={html}></div>
+    </>
   );
 };

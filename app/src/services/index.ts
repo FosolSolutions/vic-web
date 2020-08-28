@@ -5,5 +5,7 @@ export type { default as ILogin } from "./ILogin";
 export type { default as IToken } from "./IToken";
 export type { default as IAccessToken } from "./IAccessToken";
 export type { default as IUser } from "./IUser";
+export type { default as IPage } from "./IPage";
 export type { default as IContact } from "./IContact";
+export type { default as IList } from "./IList";
 export * from "./api";
