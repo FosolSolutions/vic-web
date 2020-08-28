@@ -70,19 +70,28 @@ export default () => {
   return (
     <React.Fragment>
       <Row>
-        <UploadModal data={data} setData={setData} ajax={ajax}></UploadModal>
+        {state.identity.isAuthenticated ? (
+          <UploadModal
+            path={category.path}
+            data={data}
+            setData={setData}
+            ajax={ajax}
+          ></UploadModal>
+        ) : null}
         <Col>
           <h1>Media</h1>
         </Col>
-        <Col>
-          <Button
-            variant="secondary"
-            onClick={handleUploadShow}
-            className="float-right"
-          >
-            Upload
-          </Button>
-        </Col>
+        {state.identity.isAuthenticated ? (
+          <Col>
+            <Button
+              variant="secondary"
+              onClick={handleUploadShow}
+              className="float-right"
+            >
+              Upload
+            </Button>
+          </Col>
+        ) : null}
       </Row>
       <Row>
         <Col sm={2}>

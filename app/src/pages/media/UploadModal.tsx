@@ -8,26 +8,31 @@ import { IFile, AdminItemsRoutes } from "services";
 import { IAjaxFactory } from "components/contexts/app-context";
 
 export interface IUpload {
-  file?: File;
+  file: File;
   item: IFile;
 }
 
+const defaultUploadData = (path: string) => {
+  return {
+    file: new File([], "test"),
+    item: {
+      name: "",
+      path: path,
+      author: "",
+      description: "",
+      publishedOn: null,
+      isDir: false,
+    },
+  } as IUpload;
+};
+
 export default (props: {
+  path: string;
   data: IData;
   setData: React.Dispatch<React.SetStateAction<IData>>;
   ajax: IAjaxFactory;
 }) => {
-  const [upload, setUpload] = useState<IUpload>({
-    file: undefined,
-    item: {
-      name: "",
-      path: "",
-      author: undefined,
-      publishedOn: undefined,
-      description: undefined,
-      isDir: false,
-    },
-  });
+  const [upload, setUpload] = useState<IUpload>(defaultUploadData(props.path));
 
   const setField = <P extends keyof IFile>(name: P, value: string) => {
     setUpload((s) => {
@@ -88,8 +93,10 @@ export default (props: {
                 },
                 editingIndex: undefined,
                 editingItem: undefined,
+                upload: false,
               };
             });
+            setUpload(defaultUploadData(props.path));
           } else {
             console.log("Request failed");
           }
@@ -108,11 +115,7 @@ export default (props: {
             <Row>
               <Col>
                 <Form.Group>
-                  <Form.File
-                    label="File"
-                    // value={upload.file}
-                    onChange={handleFileChange}
-                  ></Form.File>
+                  <Form.File onChange={handleFileChange}></Form.File>
                 </Form.Group>
               </Col>
             </Row>
