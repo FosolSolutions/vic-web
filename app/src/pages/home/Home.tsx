@@ -1,14 +1,14 @@
 import React from "react";
 import "./Home.css";
 import { Row, Col } from "react-bootstrap";
-import { AdminPagesRoutes, IPage } from "services";
+import { PagesRoutes, IPage } from "services";
 import { useAppContext } from "components/contexts/app-context";
 
 export default () => {
   const [, , ajax] = useAppContext();
   const [html, setHtml] = React.useState({ __html: "" });
   React.useEffect(() => {
-    ajax.get(AdminPagesRoutes.getForPath("/home")).then(async (response) => {
+    ajax.get(PagesRoutes.getForPath("/home")).then(async (response) => {
       const page = (await response.json()) as IPage;
       setHtml({ __html: page.body });
     });
