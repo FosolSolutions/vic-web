@@ -1,5 +1,5 @@
 // string | Blob | ArrayBufferView | ArrayBuffer | FormData | URLSearchParams | ReadableStream<Uint8Array> | null | undefined
-export default (data?: any, options?: RequestInit): RequestInit => {
+export const prepareBody = (data?: any, options?: RequestInit): RequestInit => {
   const headers = {
     ...options?.headers,
   } as any;
@@ -72,3 +72,5 @@ export default (data?: any, options?: RequestInit): RequestInit => {
     headers: headers,
   };
 };
+
+export default prepareBody;

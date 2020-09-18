@@ -12,14 +12,14 @@ import {
   Seminars,
   AdminPages,
 } from "../../pages";
-import { useAppContext } from "components/contexts/app-context";
+import IdentityContext from "../../contexts/identity";
 
 export default () => {
-  const [state] = useAppContext();
+  const [identity] = React.useContext(IdentityContext);
   return (
-    <React.Fragment>
+    <>
       <Switch>
-        {!state.identity?.isAuthenticated ? (
+        {!identity?.isAuthenticated ? (
           <Redirect exact path="/admin/pages" to="/login" />
         ) : null}
         <Route path="/admin/pages" component={AdminPages} />
@@ -34,6 +34,6 @@ export default () => {
         <Route exact path="/" component={Home} />
         <Route render={() => <h1>404: page not found</h1>} />
       </Switch>
-    </React.Fragment>
+    </>
   );
 };

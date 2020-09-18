@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
-import { ILogin } from "../../services";
+import { AuthRoutes, ILogin } from "../../services";
 import { useHistory } from "react-router-dom";
-import { useAppContext } from "components/contexts/app-context";
+import { IToken, Oauth } from "../../services/ajax";
 
 export default () => {
-  const [, , , oauth] = useAppContext();
   const history = useHistory();
   const [account, setAccount] = useState({
     username: "",
     password: "",
   } as ILogin);
+
   const setField = <P extends keyof ILogin>(name: P, value: any) => {
     setAccount((state) => {
       return {
@@ -19,11 +19,18 @@ export default () => {
       };
     });
   };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    oauth.token(account).then(() => {
-      history.push("/");
-    });
+
+    Oauth.post(AuthRoutes.token(), account)
+      .then(async (response) => {
+        const token = (await response.json()) as IToken;
+        Oauth.setToken(token);
+        history.push("/");
+        return token;
+      })
+      .catch(() => {});
   };
   return (
     <React.Fragment>

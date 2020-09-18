@@ -2,13 +2,12 @@ import React from "react";
 import "./Home.css";
 import { Row, Col } from "react-bootstrap";
 import { PagesRoutes, IPage } from "services";
-import { useAppContext } from "components/contexts/app-context";
+import { Oauth } from "../../services/ajax";
 
 export default () => {
-  const [, , ajax] = useAppContext();
   const [html, setHtml] = React.useState({ __html: "" });
   React.useEffect(() => {
-    ajax.get(PagesRoutes.getForPath("/home")).then(async (response) => {
+    Oauth.get(PagesRoutes.getForPath("/home")).then(async (response) => {
       const page = (await response.json()) as IPage;
       setHtml({ __html: page.body });
     });

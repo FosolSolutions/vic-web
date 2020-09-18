@@ -7,7 +7,7 @@ import {
   ButtonGroup,
   Button,
 } from "react-bootstrap";
-import { useAppContext } from "components/contexts/app-context";
+import { Oauth } from "../../../services/ajax";
 import { AdminPagesRoutes, IList, IPage } from "services";
 
 interface IData {
@@ -17,7 +17,6 @@ interface IData {
 }
 
 export default () => {
-  const [, , ajax] = useAppContext();
   const [data, setData] = React.useState<IData>({
     page: null,
     pages: {
@@ -27,7 +26,7 @@ export default () => {
     },
   });
   React.useEffect(() => {
-    ajax.get(AdminPagesRoutes.list()).then(async (response) => {
+    Oauth.get(AdminPagesRoutes.list()).then(async (response) => {
       const data = (await response.json()) as IList<IPage>;
       setData((s) => {
         return {
@@ -80,7 +79,7 @@ export default () => {
   };
 
   const updatePage = async (page: IPage) => {
-    const response = await ajax.put(AdminPagesRoutes.update(page.id), page);
+    const response = await Oauth.put(AdminPagesRoutes.update(page.id), page);
     if (response.ok) {
       const data = (await response.json()) as IPage;
       setData((s) => {

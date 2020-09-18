@@ -1,7 +1,7 @@
 import React from "react";
 import { IFile, IFiles, AdminItemsRoutes, FileStationRoutes } from "services";
 import { IData } from "./Media";
-import { IAjaxFactory } from "components/contexts/app-context";
+import { Oauth } from "../../services/ajax";
 import {
   Form,
   Modal,
@@ -18,7 +18,6 @@ export default (props: {
   item: IFile;
   data: IData;
   setData: React.Dispatch<React.SetStateAction<IData>>;
-  ajax: IAjaxFactory;
 }) => {
   const setField = <P extends keyof IFile>(name: P, value: string) => {
     props.setData((s) => {
@@ -77,34 +76,32 @@ export default (props: {
   };
 
   const handleDelete = () => {
-    props.ajax
-      .remove(
-        props.item.id
-          ? AdminItemsRoutes.remove(props.item.id)
-          : FileStationRoutes.remove(props.item.path),
-        props.item
-      )
-      .then(async (response) => {
-        if (response.ok) {
-          props.setData((s) => {
-            return {
-              ...s,
-              response: {
-                ...s.response,
-                items: [
-                  ...s.response.items.slice(0, props.index),
-                  ...s.response.items.slice(props.index + 1),
-                ],
-              },
-              editingIndex: undefined,
-              editingItem: undefined,
-              delete: false,
-            };
-          });
-        } else {
-          console.log("Request failed");
-        }
-      });
+    Oauth.delete(
+      props.item.id
+        ? AdminItemsRoutes.remove(props.item.id)
+        : FileStationRoutes.remove(props.item.path),
+      props.item
+    ).then(async (response) => {
+      if (response.ok) {
+        props.setData((s) => {
+          return {
+            ...s,
+            response: {
+              ...s.response,
+              items: [
+                ...s.response.items.slice(0, props.index),
+                ...s.response.items.slice(props.index + 1),
+              ],
+            },
+            editingIndex: undefined,
+            editingItem: undefined,
+            delete: false,
+          };
+        });
+      } else {
+        console.log("Request failed");
+      }
+    });
   };
 
   const validateForm = (item: IFile): boolean => {
@@ -112,7 +109,7 @@ export default (props: {
   };
 
   const updateItem = async (item: IFile) => {
-    const response = await props.ajax.put(
+    const response = await Oauth.put(
       AdminItemsRoutes.update(item.id as number),
       item
     );
@@ -139,7 +136,7 @@ export default (props: {
   };
 
   const addItem = async (item: IFile) => {
-    const response = await props.ajax.post(AdminItemsRoutes.add(), item);
+    const response = await Oauth.post(AdminItemsRoutes.add(), item);
     if (response.ok) {
       const data = (await response.json()) as IFile;
       props.setData((state) => {

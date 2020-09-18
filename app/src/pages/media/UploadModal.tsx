@@ -5,7 +5,7 @@ import { Form, Container, Row, Col, Button } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { IFile, AdminItemsRoutes } from "services";
-import { IAjaxFactory } from "components/contexts/app-context";
+import { Oauth } from "../../services/ajax";
 
 export interface IUpload {
   file: File;
@@ -30,7 +30,6 @@ export default (props: {
   path: string;
   data: IData;
   setData: React.Dispatch<React.SetStateAction<IData>>;
-  ajax: IAjaxFactory;
 }) => {
   const [upload, setUpload] = useState<IUpload>(defaultUploadData(props.path));
 
@@ -79,28 +78,26 @@ export default (props: {
       const form = new FormData();
       form.append("file", (upload.file as unknown) as File);
       form.append("item", JSON.stringify(upload.item));
-      props.ajax
-        .post(AdminItemsRoutes.upload(), form)
-        .then(async (response) => {
-          if (response.ok) {
-            const data = (await response.json()) as IFile;
-            props.setData((state) => {
-              return {
-                ...state,
-                response: {
-                  ...state.response,
-                  items: [data, ...state.response.items],
-                },
-                editingIndex: undefined,
-                editingItem: undefined,
-                upload: false,
-              };
-            });
-            setUpload(defaultUploadData(props.path));
-          } else {
-            console.log("Request failed");
-          }
-        });
+      Oauth.post(AdminItemsRoutes.upload(), form).then(async (response) => {
+        if (response.ok) {
+          const data = (await response.json()) as IFile;
+          props.setData((state) => {
+            return {
+              ...state,
+              response: {
+                ...state.response,
+                items: [data, ...state.response.items],
+              },
+              editingIndex: undefined,
+              editingItem: undefined,
+              upload: false,
+            };
+          });
+          setUpload(defaultUploadData(props.path));
+        } else {
+          console.log("Request failed");
+        }
+      });
     }
   };
 

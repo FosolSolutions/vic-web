@@ -2,11 +2,15 @@ import React, { useState, useEffect } from "react";
 import "./Media.css";
 import { FileStationRoutes, IFiles, IFile } from "../../services";
 import { Row, Col, Button } from "react-bootstrap";
-import { useAppContext } from "components/contexts/app-context";
+import { Oauth } from "../../services/ajax";
 import { ItemView, ItemForm, UploadModal } from "./";
+import IdentityContext from "../../contexts/identity";
 
 const defaultShare = "/talks";
-const defaultPath = "/talks/Exhortations";
+const defaultCategory = {
+  name: "Exhortations",
+  path: "/talks/Exhortations",
+};
 
 export interface IData {
   response: IFiles;
@@ -18,10 +22,8 @@ export interface IData {
 }
 
 export default () => {
-  const [state, , ajax] = useAppContext();
-  const [category, setCategory] = useState({
-    path: defaultPath,
-  });
+  const [identity] = React.useContext(IdentityContext);
+  const [category, setCategory] = useState(defaultCategory);
   const [categories, setCategories] = useState({
     page: 1,
     total: 0,
@@ -30,9 +32,9 @@ export default () => {
   const [data, setData] = useState({
     response: { page: 1, total: 0, items: [] },
   } as IData);
+
   useEffect(() => {
-    ajax
-      .get(FileStationRoutes.files(defaultShare))
+    Oauth.get(FileStationRoutes.files(defaultShare))
       .then(async (response) => {
         const data = (await response.json()) as IFiles;
         setCategories(data);
@@ -41,9 +43,9 @@ export default () => {
         setCategories({ page: 1, total: 0, items: [] } as IFiles);
       });
   }, []);
+
   useEffect(() => {
-    ajax
-      .get(FileStationRoutes.files(category.path))
+    Oauth.get(FileStationRoutes.files(category.path))
       .then(async (response) => {
         const data = (await response.json()) as IFiles;
         setData({
@@ -70,18 +72,17 @@ export default () => {
   return (
     <React.Fragment>
       <Row>
-        {state.identity.isAuthenticated ? (
+        {identity.isAuthenticated ? (
           <UploadModal
             path={category.path}
             data={data}
             setData={setData}
-            ajax={ajax}
           ></UploadModal>
         ) : null}
         <Col>
           <h1>Media</h1>
         </Col>
-        {state.identity.isAuthenticated ? (
+        {identity.isAuthenticated ? (
           <Col>
             <Button
               variant="secondary"
@@ -102,7 +103,9 @@ export default () => {
                 <li key={category.path}>
                   <a
                     href={"#" + category.name}
-                    onClick={() => setCategory({ path: category.path })}
+                    onClick={() =>
+                      setCategory({ name: category.name, path: category.path })
+                    }
                   >
                     {category.name}
                   </a>
@@ -112,6 +115,7 @@ export default () => {
           </ul>
         </Col>
         <Col sm={10}>
+          <h3>{category.name}</h3>
           <ul>
             {!data.response.items || data.response.items?.length === 0 ? (
               <li>
@@ -122,8 +126,8 @@ export default () => {
               return (
                 <li key={index}>
                   {data.editingIndex === index
-                    ? ItemForm({ index, item, data, setData, ajax })
-                    : ItemView({ index, item, state, data, setData })}
+                    ? ItemForm({ index, item, data, setData })
+                    : ItemView({ index, item, data, setData })}
                   <hr />
                 </li>
               );

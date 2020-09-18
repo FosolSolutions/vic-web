@@ -1,6 +1,6 @@
 import React from "react";
 import { IFile, FileStationRoutes } from "services";
-import { IAppState } from "components/contexts/app-context";
+import IdentityContext from "../../contexts/identity";
 import { IData } from "./Media";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import dateFormat from "dateformat";
@@ -8,10 +8,11 @@ import dateFormat from "dateformat";
 export default (props: {
   index: number;
   item: IFile;
-  state: IAppState;
   data: IData;
   setData: React.Dispatch<React.SetStateAction<IData>>;
 }) => {
+  const [identity] = React.useContext(IdentityContext);
+
   const handleEdit = (event: React.FormEvent<HTMLElement>) => {
     event.preventDefault();
     props.setData((s) => {
@@ -35,8 +36,7 @@ export default (props: {
             ? ` - ${dateFormat(props.item.publishedOn, "dddd mmmm dd yyyy")}`
             : null}
         </Col>
-        {props.state.identity.isAuthenticated &&
-        props.data.editingIndex === undefined ? (
+        {identity.isAuthenticated && props.data.editingIndex === undefined ? (
           <Col sm={1}>
             <Button variant="light" onClick={handleEdit}>
               Edit

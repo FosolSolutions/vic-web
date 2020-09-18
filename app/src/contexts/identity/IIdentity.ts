@@ -1,6 +1,7 @@
 import IClaim from "./IClaim";
 
 export default interface IIdentity {
+  key?: string;
   isAuthenticated: boolean;
   username?: string;
   email?: string;

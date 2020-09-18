@@ -1,13 +1,12 @@
 import React from "react";
 import "./Events.css";
-import { useAppContext } from "components/contexts/app-context";
+import { Oauth } from "../../services/ajax";
 import { PagesRoutes, IPage } from "services";
 
 export default () => {
-  const [, , ajax] = useAppContext();
   const [html, setHtml] = React.useState({ __html: "" });
   React.useEffect(() => {
-    ajax.get(PagesRoutes.getForPath("/events")).then(async (response) => {
+    Oauth.get(PagesRoutes.getForPath("/events")).then(async (response) => {
       const page = (await response.json()) as IPage;
       setHtml({ __html: page.body });
     });

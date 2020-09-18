@@ -2,7 +2,7 @@ import React from "react";
 import { Row, Col, Form, Button, InputGroup, Alert } from "react-bootstrap";
 import { ContactRoutes } from "../../services";
 import { IContact } from "../../services";
-import { useAppContext } from "components/contexts/app-context";
+import { Oauth } from "../../services/ajax";
 
 interface IState {
   messageSent: boolean;
@@ -11,7 +11,6 @@ interface IState {
 }
 
 export default () => {
-  const [, , ajax] = useAppContext();
   const [contact, setContact] = React.useState({
     messageSent: false,
     message: {},
@@ -38,7 +37,7 @@ export default () => {
       contact.message.subject &&
       contact.message.body
     ) {
-      ajax.post(ContactRoutes.submit(), contact.message).then(() => {
+      Oauth.post(ContactRoutes.submit(), contact.message).then(() => {
         setContact({
           ...contact,
           messageSent: true,

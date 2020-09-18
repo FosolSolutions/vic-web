@@ -1,8 +1,8 @@
 version: "3.5"
 
 services:
-  vic-db:
-    restart: always
+  database:
+    restart: on-failure:1
     container_name: vic-db
     build:
       context: api/db
@@ -12,12 +12,12 @@ services:
     volumes:
       - database:/var/lib/mysql
     networks:
-      - vic
-  vic-api:
-    restart: always
+      - vic-nic
+  api:
+    restart: on-failure:1
     container_name: vic-api
     depends_on:
-      - vic-db
+      - database
     build:
       context: api
     env_file: ./api/src/.env
@@ -27,14 +27,14 @@ services:
     volumes:
       - "./api/certs:/root/https"
     networks:
-      - vic
-  vic-web:
-    restart: always
-    container_name: vic-web
+      - vic-nic
+  app:
+    restart: on-failure:1
+    container_name: vic-app
     tty: true
     stdin_open: true
     depends_on:
-      - vic-api
+      - api
     build:
       context: app
     env_file: ./.env
@@ -43,17 +43,17 @@ services:
     volumes:
       - ./app/src:/usr/app/src
       - ./app/public:/usr/app/public
-      - node-cache:/usr/app/node_modules
+      - vic-app-node-cache:/usr/app/node_modules
     networks:
-      - vic
+      - vic-nic
 
 networks:
-  vic:
+  vic-nic:
     name: vic-net
     driver: bridge
 
 volumes:
-  node-cache:
-    name: vic-web-node_modules
+  vic-app-node-cache:
+    name: vic-app-node-cache
   database:
     name: vic-api-db
