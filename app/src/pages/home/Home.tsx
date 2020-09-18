@@ -1,17 +1,10 @@
 import React from "react";
 import "./Home.css";
 import { Row, Col } from "react-bootstrap";
-import { PagesRoutes, IPage } from "services";
-import { Oauth } from "../../services/ajax";
+import { usePage } from "../../hooks";
 
 export default () => {
-  const [html, setHtml] = React.useState({ __html: "" });
-  React.useEffect(() => {
-    Oauth.get(PagesRoutes.getForPath("/home")).then(async (response) => {
-      const page = (await response.json()) as IPage;
-      setHtml({ __html: page.body });
-    });
-  }, []);
+  const page = usePage("/home");
 
   return (
     <>
@@ -29,7 +22,7 @@ export default () => {
       </Row>
       <Row>&nbsp;</Row>
       <Row>
-        <Col sm={8} dangerouslySetInnerHTML={html}></Col>
+        <Col sm={8} dangerouslySetInnerHTML={page}></Col>
         <Col sm={4}>
           <iframe
             title="Directions"

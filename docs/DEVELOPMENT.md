@@ -75,7 +75,7 @@ If you want to manually choose your own passwords, you will need to modify the `
 Once the script completes successfully you will have a working environment - [https://localhost:3000](https://localhost:3000).
 
 ```bash
-make setup
+./scripts/gen-env-files.sh
 ```
 
 ### Development
